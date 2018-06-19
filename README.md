@@ -12,3 +12,9 @@ Just clone the repo and do `npm start` and you are good to go?
 
 Or if you have the emulator, just use the emulator in your computer.
 
+## API I used
+
+The [Cat Facts API](https://catfact.ninja/) is very educational. 
+
+
+###### This is for Planto coding challenge.
