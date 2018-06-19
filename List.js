@@ -1,41 +1,74 @@
 import React from 'react';
-import { FlatList, Text, View, Dimensions, Animated, Easing } from 'react-native';
+import { FlatList, 
+    Text, 
+    View, 
+    Dimensions, 
+    Animated, 
+    Easing, 
+    TouchableWithoutFeedback, 
+    Button } from 'react-native';
+
+import { connect } from 'react-redux';
+import { getFact } from './reducer';
+
+const mapStateToProps = state => {
+    return {
+        ...state
+    };
+};
+
+const mapDispatchToProps = {
+    getFact
+};
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
-const itemStyleGen = () => {
-    var r = Math.floor(Math.random()*128 + 128);
-    var g = Math.floor(Math.random()*128 + 128);
-    var b = Math.floor(Math.random()*128 + 128);
-    var rgb = `rgb(${r}, ${g}, ${b})`;
+const marginRatio = 0.06;
 
-    const marginRatio = 0.05;
-    var itemStyle = {
-        marginTop: 10,
-        marginLeft: SCREEN_WIDTH*marginRatio,
-        marginRight: SCREEN_WIDTH*marginRatio,
-        borderRadius: 5,
-        width: SCREEN_WIDTH*(1-marginRatio*2),
-        backgroundColor: rgb
-    };
-    return itemStyle;
+const itemStyle = {
+    marginTop: 25,
+    marginLeft: SCREEN_WIDTH*marginRatio,
+    marginRight: SCREEN_WIDTH*marginRatio,
+    borderRadius: 10,
+    shadowRadius: 6,
+    shadowOffset: {
+        width: 0,
+        height: 1000 
+    },
+    shadowOpacity: 0.3,
+    width: SCREEN_WIDTH*(1-marginRatio*2),
+};
+
+const titleStyle = {
+    textAlign: 'left',
+    fontSize: 20,
+    marginLeft: 10,
+    marginTop: 10
 }
-const textStyle = {
-    textAlign: 'left'
+
+const contentStyle = {
+    margin: 10,
+    marginBottom: 15
 }
+
 class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props.getFact();
+        console.log(props);
+    }
+    _keyExtrator = (item, index) => item._id;
     render(){
-    const data = [
-        { key: '1', name: 'Python', amount: '3000 lines' },
-        { key: '2', name: 'Node', amount: '200 lines' },
-        { key: '3', name: 'Go', amount: '300 lines' },
-        { key: '4', name: 'JavaScript', amount: '200 lines' },
-    ];
+    console.log(this.props.facts);
     return(
         <View>
-        <Text style={{textAlign: 'center', marginTop: SCREEN_HEIGHT* 0.1, fontSize: 55}}>Some Cat Facts</Text>
-        <FlatList data={data} renderItem={({item}) => <Item idNum={item.key} name={item.name} amount={item.amount}></Item>} />
+        <Text style={{textAlign: 'center', marginTop: SCREEN_HEIGHT* 0.1, fontSize: 50}}>Some Cat Facts</Text>
+        <Button title="Give Me New Facts!" onPress={this.props.getFact}/>
+        <FlatList data={this.props.facts}  
+        renderItem={({item, index}) => <Item idNum={index + 1} fact={item.text} />} 
+        keyExtractor = {this._keyExtrator}
+        />
         </View>
     );
    } 
@@ -45,31 +78,56 @@ class Item extends React.Component {
     constructor(props) {
         super(props);
         const i = this.props.idNum;
+        var r = Math.floor(Math.random()*128 + 128);
+        var g = Math.floor(Math.random()*128 + 128);
+        var b = Math.floor(Math.random()*128 + 128);
+        var rgb = `rgb(${r}, ${g}, ${b})`;
         this.state = {
-            yPos: new Animated.Value(i*i*SCREEN_HEIGHT* 0.05+ SCREEN_HEIGHT)
+            yPos: new Animated.Value(i*i*SCREEN_HEIGHT* 0.05+ SCREEN_HEIGHT),
+            color: rgb,
+            numLines: 3
         }
     }
-
-    componentDidMount() {
+    componentDidMount(){
         Animated.timing(
             this.state.yPos,
             { toValue: 0,
-                easing: Easing.out(Easing.quad),
+                easing: Easing.out(Easing.cubic),
                 duration: 800,
                 delay: 800
             },
         ).start();
-   }
+    }
+    componentDidUpdate(){
+        Animated.timing(
+            this.state.yPos,
+            { toValue: 0,
+                easing: Easing.out(Easing.cubic),
+                duration: 800,
+                delay: 800
+            },
+        ).start(); 
+    }
+
+    expand(){
+        this.setState({numLines: this.state.numLines==-1?3:-1});
+    }
+
+
     render(){
         return (
-            <Animated.View style={{...itemStyleGen(), transform: [
+            <TouchableWithoutFeedback onPress={this.expand.bind(this)}>
+            <Animated.View style={{...itemStyle, backgroundColor: this.state.color ,
+             transform: [
                 {translateY: this.state.yPos}
-            ]}}>
-                <Text style={textStyle}>{this.props.name}</Text>
-                <Text style={textStyle}>{this.props.amount}</Text>
+            ]}}> 
+     
+                <Text style={titleStyle}>Cat Fact {this.props.idNum}</Text>
+                <Text style={contentStyle} numberOfLines={this.state.numLines}>{this.props.fact}</Text>
             </Animated.View>
+            </TouchableWithoutFeedback>
         );
     }
 }
 
-export default List;
+export default connect(mapStateToProps, mapDispatchToProps)(List);
