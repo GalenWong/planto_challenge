@@ -56,11 +56,9 @@ class List extends React.Component {
     constructor(props) {
         super(props);
         this.props.getFact();
-        console.log(props);
     }
     _keyExtrator = (item, index) => item._id;
     render(){
-    console.log(this.props.facts);
     return(
         <View>
         <Text style={{textAlign: 'center', marginTop: SCREEN_HEIGHT* 0.1, fontSize: 50}}>Some Cat Facts</Text>
