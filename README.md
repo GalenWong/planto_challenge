@@ -8,7 +8,7 @@ It generates cat fact and presents it to you in a nice way.
 
 Well, if it is a react-native app, you can use [Expo](https://expo.io/). 
 
-Just clone the repo and do npm start and you are good to go?
+Just clone the repo and do `npm start` and you are good to go?
 
 Or if you have the emulator, just use the emulator in your computer.
 
