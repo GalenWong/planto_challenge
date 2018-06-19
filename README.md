@@ -14,7 +14,7 @@ Or if you have the emulator, just use the emulator in your computer.
 
 ## API I used
 
-The [Cat Facts API](https://catfact.ninja/) is very educational. 
+The [Cat Facts API](https://cat-fact.herokuapp.com/#/) is very educational. 
 
 
 ###### This is for Planto coding challenge.
